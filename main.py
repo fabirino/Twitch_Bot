@@ -5,7 +5,7 @@ class Bot:
     def __init__(self):
         self.irc_server = 'irc.twitch.tv'
         self.irc_port = 6667
-        self.oauth_token = 'oauth:iq0aphsud3csuzq3ibryo6h4e9bwuj'
+        self.oauth_token = 'iq0aphsud3csuzq3ibryo6h4e9bwuj'
         self.username = 'yakaribot'
         self.channels = ['yakaribot']
 
@@ -15,7 +15,7 @@ class Bot:
     def send_command(self, command):
         if 'PASS' not in command:
             print(f'<{command}') 
-        self.irc.send(command + '\r\n').enconde()
+        self.irc.send((command + '\r\n').encode())
 
     def connect(self):
         self.irc = socket.socket()
@@ -45,4 +45,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
