@@ -1,7 +1,7 @@
 import socket
 from collections import namedtuple
 
-#import config
+import config
 
 Message = namedtuple(
     'Message',
@@ -13,7 +13,7 @@ class Bot:
     def __init__(self):
         self.irc_server = 'irc.twitch.tv'
         self.irc_port = 6667
-        self.oauth_token = 'oauth:iq0aphsud3csuzq3ibryo6h4e9bwuj'
+        self.oauth_token = config.OAUTH_TOKEN
         self.username = 'yakaribot'
         self.channels = ['yakaribot']
 
@@ -32,7 +32,7 @@ class Bot:
         self.send_command(f'NICK {self.username}')
         for channel in self.channels:
             self.send_command(f'JOIN #{channel}')
-            self.send_privmsg(channel, "Hey there!")
+            self.send_privmsg(channel, 'Hey there!')
         self.loop_for_messages()
 
 
@@ -97,6 +97,9 @@ class Bot:
         return message
 
     def handle_message(self, received_msg):
+        if len(received_msg) == 0:
+            return
+
         message = self.parse_mesage(received_msg)
         print(f'> {message}')
 
