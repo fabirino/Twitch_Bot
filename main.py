@@ -3,6 +3,11 @@ from collections import namedtuple
 
 import config
 
+TEMPLATE_COMMANDS ={
+    '!discord' : 'Please join the {message.channel} our discord server, @{message.user}',
+    '!so' : 'Check out {message.text_args[0]} they are a nice streamer'
+}
+
 Message = namedtuple(
     'Message',
     'prefix user channel irc_command irc_args text text_command text_args',
@@ -18,7 +23,7 @@ class Bot:
         self.channels = ['yakaribot']
 
     def send_privmsg(self, channel, text):
-        self.send_command(f'PRIVMSG #{channel}: {text}')
+        self.send_command(f'PRIVMSG #{channel} :{text}')
 
     def send_command(self, command):
         if 'PASS' not in command:
@@ -96,12 +101,26 @@ class Bot:
         )
         return message
 
+    def handle_template_commands(self, message, template):
+        text = template.format(**{'message': message})
+        self.send_privmsg(message.channel, text)
+
     def handle_message(self, received_msg):
         if len(received_msg) == 0:
             return
 
         message = self.parse_mesage(received_msg)
-        print(f'> {message}')
+        print(f'> {message.user}: {message.text}')
+
+        if message.irc_command == 'PING':
+            self.send_command('PONG :tmi.twitch.tv')
+
+        if message.irc_command == 'PRIVMSG':
+            if message.text_command in TEMPLATE_COMMANDS:
+                self.handle_template_commands(
+                    message,
+                    TEMPLATE_COMMANDS[message.text_command],
+                )
 
 
     def loop_for_messages(self):
